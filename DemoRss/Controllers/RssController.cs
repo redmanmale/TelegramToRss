@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using DemoRss.DAL;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WilderMinds.RssSyndication;
 
 namespace DemoRss.Controllers
@@ -13,37 +11,41 @@ namespace DemoRss.Controllers
     {
         private const string ContentTypeXml = "application/xml";
 
+        private readonly IStorage _storage;
+
+        public RssController(BlogDbContext storage)
+        {
+            _storage = storage;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            using (var context = new BlogDbContext())
-            {
-                var posts = await context.BlogPosts.Where(b => b.PublishDate > DateTime.Now.AddDays(-1)).ToListAsync();
+            var posts = await _storage.GetPostsAfterDateAsync(DateTime.Now.AddDays(-1000));
 
-                var feed = new Feed
+            var feed = new Feed
+            {
+                Title = "Username's feed",
+                Copyright = "",
+                Description = "",
+                Link = new Uri("https://foobar")
+            };
+
+            foreach (var post in posts)
+            {
+                var item = new Item
                 {
-                    Title = "Shawn Wildermuth's Blog",
-                    Description = "My Favorite Rants and Raves",
-                    Link = new Uri("http://wildermuth.com/feed"),
-                    Copyright = "(c) 2016"
+                    Title = post.Header,
+                    Body = post.Text,
+                    Link = new Uri(post.GetUrl()),
+                    PublishDate = post.PublishDate,
+                    Author = new Author { Name = post.Channel.Name }
                 };
 
-                foreach (var post in posts)
-                {
-                    var item = new Item
-                    {
-                        Title = "TODO",
-                        Body = post.Text,
-                        Link = new Uri("https://TODO"),
-                        PublishDate = post.PublishDate,
-                        Author = new Author { Name = post.Channel.Name }
-                    };
-
-                    feed.Items.Add(item);
-                }
-
-                return FormatRssResponse(feed);
+                feed.Items.Add(item);
             }
+
+            return FormatRssResponse(feed);
         }
 
         private ContentResult FormatRssResponse(Feed rss) => Content(rss.Serialize(), ContentTypeXml);

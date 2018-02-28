@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using DemoRss.DAL;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +22,8 @@ namespace DemoRss
         {
             services.AddMvc(o => o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()));
 
-            //var connectionString = Configuration.GetConnectionString("BlogDbContext");
+            var connectionString = Configuration.GetConnectionString("BlogDbContext");
+            services.AddDbContext<BlogDbContext>(a => a.UseNpgsql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
