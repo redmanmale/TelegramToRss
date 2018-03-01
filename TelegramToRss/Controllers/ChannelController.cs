@@ -11,7 +11,7 @@ namespace Redmanmale.TelegramToRss.Controllers
     {
         private readonly IStorage _storage;
 
-        public ChannelController(BlogDbContext storage)
+        public ChannelController(GeneralDbContext storage)
         {
             _storage = storage;
         }

@@ -38,7 +38,7 @@ namespace Redmanmale.TelegramToRss.Crawler
         /// <summary>
         /// Create post entity from provided URL.
         /// </summary>
-        public BlogPost GetPost(string url)
+        public Post GetPost(string url)
         {
             _driver.Url = url;
             _driver.Navigate();
@@ -49,7 +49,7 @@ namespace Redmanmale.TelegramToRss.Crawler
         /// <summary>
         /// Create post entity from html.
         /// </summary>
-        private static BlogPost ParsePost(string postData)
+        private static Post ParsePost(string postData)
         {
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(postData);
@@ -74,7 +74,7 @@ namespace Redmanmale.TelegramToRss.Crawler
             var isService = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='message_media_not_supported_label']") != null;
             var isDeleted = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='tgme_widget_message_error']") != null;
 
-            var post = new BlogPost
+            var post = new Post
             {
                 PublishDate = DateTime.Parse(date)
             };

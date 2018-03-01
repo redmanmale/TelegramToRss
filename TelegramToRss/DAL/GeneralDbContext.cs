@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Redmanmale.TelegramToRss.DAL
 {
-    public class BlogDbContext : DbContext, IStorage
+    public class GeneralDbContext : DbContext, IStorage
     {
-        public BlogDbContext(DbContextOptions options) : base(options) { }
+        public GeneralDbContext(DbContextOptions options) : base(options) { }
 
-        private DbSet<BlogPost> BlogPosts { get; set; }
+        private DbSet<Post> BlogPosts { get; set; }
 
         private DbSet<Channel> Channels { get; set; }
 
@@ -43,7 +43,7 @@ namespace Redmanmale.TelegramToRss.DAL
             }
         }
 
-        public Task<List<BlogPost>> GetPostsAfterDateAsync(DateTime dateTime)
+        public Task<List<Post>> GetPostsAfterDateAsync(DateTime dateTime)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace Redmanmale.TelegramToRss.DAL
             }
         }
 
-        public async Task SavePostAsync(BlogPost post)
+        public async Task SavePostAsync(Post post)
         {
             try
             {

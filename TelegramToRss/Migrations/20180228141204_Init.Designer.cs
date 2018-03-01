@@ -9,7 +9,7 @@ using Redmanmale.TelegramToRss.DAL;
 
 namespace Redmanmale.TelegramToRss.Migrations
 {
-    [DbContext(typeof(BlogDbContext))]
+    [DbContext(typeof(GeneralDbContext))]
     [Migration("20180228141204_Init")]
     partial class Init
     {

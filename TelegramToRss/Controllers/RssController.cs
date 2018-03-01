@@ -15,7 +15,7 @@ namespace Redmanmale.TelegramToRss.Controllers
 
         private readonly IStorage _storage;
 
-        public RssController(BlogDbContext storage)
+        public RssController(GeneralDbContext storage)
         {
             _storage = storage;
         }
@@ -23,7 +23,7 @@ namespace Redmanmale.TelegramToRss.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<BlogPost> posts;
+            List<Post> posts;
 
             try
             {
@@ -49,7 +49,7 @@ namespace Redmanmale.TelegramToRss.Controllers
                 {
                     Title = post.Header,
                     Body = post.Text,
-                    Link = new Uri(post.GetUrl()),
+                    Link = new Uri(post.GetPermalink()),
                     PublishDate = post.PublishDate,
                     Author = new Author { Name = post.Channel.Name }
                 };

@@ -79,11 +79,11 @@ namespace Redmanmale.TelegramToRss
             return CreatePgSqlDbContext(connectionString);
         }
 
-        private static BlogDbContext CreatePgSqlDbContext(string connectionString)
+        private static GeneralDbContext CreatePgSqlDbContext(string connectionString)
         {
-            var options = new DbContextOptionsBuilder<BlogDbContext>();
+            var options = new DbContextOptionsBuilder<GeneralDbContext>();
             options.UseNpgsql(connectionString);
-            return new BlogDbContext(options.Options);
+            return new GeneralDbContext(options.Options);
         }
     }
 }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Redmanmale.TelegramToRss.DAL
 {
-    public class BlogPost
+    public class Post
     {
         /// <summary>
         /// Id from DB.
@@ -49,7 +49,7 @@ namespace Redmanmale.TelegramToRss.DAL
         /// <summary>
         /// Permalink URL of the post.
         /// </summary>
-        public string GetUrl() => FormatUrl(Channel.Url, Number);
+        public string GetPermalink() => FormatUrl(Channel.Url, Number);
 
         /// <summary>
         /// Generate URL of the post for provided data.

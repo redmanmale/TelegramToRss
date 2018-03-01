@@ -23,7 +23,7 @@ namespace Redmanmale.TelegramToRss
             services.AddMvc(o => o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()));
 
             var connectionString = Configuration.GetConnectionString("BlogDbContext");
-            services.AddDbContext<BlogDbContext>(a => a.UseNpgsql(connectionString));
+            services.AddDbContext<GeneralDbContext>(a => a.UseNpgsql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,7 +8,7 @@ using Redmanmale.TelegramToRss.DAL;
 
 namespace Redmanmale.TelegramToRss.Migrations
 {
-    [DbContext(typeof(BlogDbContext))]
+    [DbContext(typeof(GeneralDbContext))]
     partial class BlogDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

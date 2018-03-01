@@ -10,9 +10,9 @@ namespace Redmanmale.TelegramToRss.DAL
 
         Task<Channel> GetChannelAsync(long channelId);
 
-        Task<List<BlogPost>> GetPostsAfterDateAsync(DateTime dateTime);
+        Task<List<Post>> GetPostsAfterDateAsync(DateTime dateTime);
 
-        Task SavePostAsync(BlogPost post);
+        Task SavePostAsync(Post post);
 
         Task AddChannelAsync(Channel channel);
 
