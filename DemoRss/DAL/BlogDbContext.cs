@@ -17,14 +17,47 @@ namespace DemoRss.DAL
 
         public Task<List<Channel>> GetChannelsAsync()
         {
-            return Channels.ToListAsync();
+            try
+            {
+                return Channels.OrderBy(d => d.Id).ToListAsync();
+            }
+            catch (Exception exc)
+            {
+                // TODO: Logging
+                Console.WriteLine(exc);
+                throw new DbException("Error occured when reading channels", exc);
+            }
+        }
+
+        public Task<Channel> GetChannelAsync(long channelId)
+        {
+            try
+            {
+                return Channels.SingleOrDefaultAsync(a => a.Id == channelId);
+            }
+            catch (Exception exc)
+            {
+                // TODO: Logging
+                Console.WriteLine(exc);
+                throw new DbException($"Error occured when reading channel: {channelId}", exc);
+            }
         }
 
         public Task<List<BlogPost>> GetPostsAfterDateAsync(DateTime dateTime)
         {
-            return BlogPosts.Where(b => b.PublishDate > dateTime)
-                            .Include(a => a.Channel)
-                            .ToListAsync();
+            try
+            {
+                return BlogPosts.Where(b => b.PublishDate > dateTime)
+                                .OrderBy(d => d.Id)
+                                .Include(a => a.Channel)
+                                .ToListAsync();
+            }
+            catch (Exception exc)
+            {
+                // TODO: Logging
+                Console.WriteLine(exc);
+                throw new DbException("Error occured when reading posts", exc);
+            }
         }
 
         public async Task SavePostAsync(BlogPost post)
@@ -42,7 +75,7 @@ namespace DemoRss.DAL
             {
                 // TODO: Logging
                 Console.WriteLine(exc);
-                throw;
+                throw new DbException($"Error occured when saving post: {post}", exc);
             }
         }
 
@@ -63,7 +96,50 @@ namespace DemoRss.DAL
             {
                 // TODO: Logging
                 Console.WriteLine(exc);
-                throw;
+                throw new DbException($"Error occured when updating channel: {channel}", exc);
+            }
+        }
+
+        public async Task AddChannelAsync(Channel channel)
+        {
+            try
+            {
+                using (var transaction = Database.BeginTransaction(IsolationLevel.Serializable))
+                {
+                    await Channels.AddAsync(channel);
+                    await SaveChangesAsync();
+                    transaction.Commit();
+                }
+            }
+            catch (Exception exc)
+            {
+                // TODO: Logging
+                Console.WriteLine(exc);
+                throw new DbException($"Error occured when adding channel: {channel}", exc);
+            }
+        }
+
+        public async Task DeleteChannelAsync(long channelId)
+        {
+            try
+            {
+                using (var transaction = Database.BeginTransaction(IsolationLevel.Serializable))
+                {
+                    var channel = await Channels.AsNoTracking().SingleOrDefaultAsync(d => d.Id == channelId);
+                    if (channel != null)
+                    {
+                        Channels.Remove(channel);
+                        await SaveChangesAsync();
+                    }
+
+                    transaction.Commit();
+                }
+            }
+            catch (Exception exc)
+            {
+                // TODO: Logging
+                Console.WriteLine(exc);
+                throw new DbException($"Error occured when deleting channel: {channelId}", exc);
             }
         }
     }

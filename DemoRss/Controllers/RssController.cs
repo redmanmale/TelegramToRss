@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using DemoRss.DAL;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +23,17 @@ namespace DemoRss.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var posts = await _storage.GetPostsAfterDateAsync(DateTime.Now.AddDays(-1000));
+            List<BlogPost> posts;
+
+            try
+            {
+                posts = await _storage.GetPostsAfterDateAsync(DateTime.Now.AddDays(-1000));
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc);
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
 
             var feed = new Feed
             {
