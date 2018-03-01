@@ -22,7 +22,7 @@ namespace Redmanmale.TelegramToRss
         {
             services.AddMvc(o => o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()));
 
-            var connectionString = Configuration.GetConnectionString("BlogDbContext");
+            var connectionString = Configuration.GetConnectionString("GeneralDbContext");
             services.AddDbContext<GeneralDbContext>(a => a.UseNpgsql(connectionString));
         }
 

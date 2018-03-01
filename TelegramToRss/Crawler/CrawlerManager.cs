@@ -7,15 +7,14 @@ namespace Redmanmale.TelegramToRss.Crawler
 {
     public class CrawlerManager
     {
-        private static readonly TimeSpan MainPeriod = TimeSpan.FromSeconds(3000);
-        private static readonly TimeSpan PostPeriod = TimeSpan.FromSeconds(1);
-
         private readonly Crawler _crawler;
         private readonly IStorage _storage;
+        private readonly CrawlingConfig _config;
 
-        public CrawlerManager(string driverPath, IStorage storage)
+        public CrawlerManager(string driverPath, IStorage storage, CrawlingConfig config)
         {
             _storage = storage;
+            _config = config;
             _crawler = new Crawler(driverPath);
         }
 
@@ -28,11 +27,11 @@ namespace Redmanmale.TelegramToRss.Crawler
                 {
                     while (await CheckForNewPost(channel))
                     {
-                        await Task.Delay(PostPeriod, cancellationToken);
+                        await Task.Delay(_config.ChannelPostDelay, cancellationToken);
                     }
                 }
 
-                await Task.Delay(MainPeriod, cancellationToken);
+                await Task.Delay(_config.ChannelCheckPeriod, cancellationToken);
             }
         }
 

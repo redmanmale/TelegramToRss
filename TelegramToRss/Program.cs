@@ -29,8 +29,13 @@ namespace Redmanmale.TelegramToRss
             if (enableCrawler)
             {
                 var config = GetConfiguration();
-                crawlerManager = new CrawlerManager(GetSeleniumDriverPath(config), CreateDbContext(config));
-                Task.Run(() => crawlerManager.RunAsync(CancellationToken.None).ContinueWith(task => Console.WriteLine(task.Exception))); // TODO: Logging
+                crawlerManager = new CrawlerManager(GetSeleniumDriverPath(config),
+                                                    CreateDbContext(config),
+                                                    CreateCrawlingConfig(config));
+
+                Task.Run(() => crawlerManager
+                               .RunAsync(CancellationToken.None)
+                               .ContinueWith(task => Console.WriteLine(task.Exception)));
             }
 
             IWebHost webHost = null;
@@ -69,13 +74,23 @@ namespace Redmanmale.TelegramToRss
 
         private static string GetSeleniumDriverPath(IConfiguration config)
         {
-            var driverPath = config.GetSection("SeleniumDrivers")["GeckoDriverPath"];
+            var driverPath = config.GetSection("SeleniumDrivers")?["GeckoDriverPath"];
+            if (string.IsNullOrWhiteSpace(driverPath))
+            {
+                throw new ArgumentNullException("Config: SeleniumDrivers -> GeckoDriverPath");
+            }
+
             return driverPath;
         }
 
         private static IStorage CreateDbContext(IConfiguration config)
         {
-            var connectionString = config.GetConnectionString("BlogDbContext");
+            var connectionString = config.GetConnectionString("GeneralDbContext");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException("Config: ConnectionStrings -> GeneralDbContext");
+            }
+
             return CreatePgSqlDbContext(connectionString);
         }
 
@@ -84,6 +99,25 @@ namespace Redmanmale.TelegramToRss
             var options = new DbContextOptionsBuilder<GeneralDbContext>();
             options.UseNpgsql(connectionString);
             return new GeneralDbContext(options.Options);
+        }
+
+        private static CrawlingConfig CreateCrawlingConfig(IConfiguration config)
+        {
+            var channelCheckPeriodStr = config.GetSection("Delays")?["ChannelCheckPeriod"];
+            if (string.IsNullOrWhiteSpace(channelCheckPeriodStr) ||
+                TimeSpan.TryParse(channelCheckPeriodStr, out var channelCheckPeriod))
+            {
+                throw new ArgumentException("Config: Delays -> ChannelCheckPeriod");
+            }
+
+            var channelPostDelayStr = config.GetSection("Delays")?["ChannelPostDelay"];
+            if (string.IsNullOrWhiteSpace(channelPostDelayStr) ||
+                TimeSpan.TryParse(channelPostDelayStr, out var channelPostDelay))
+            {
+                throw new ArgumentException("Config: Delays -> ChannelPostDelay");
+            }
+
+            return new CrawlingConfig(channelCheckPeriod, channelPostDelay);
         }
     }
 }
