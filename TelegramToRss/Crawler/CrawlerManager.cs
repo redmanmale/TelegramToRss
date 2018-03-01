@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DemoRss.DAL;
+using Redmanmale.TelegramToRss.DAL;
 
-namespace DemoRss.Crawler
+namespace Redmanmale.TelegramToRss.Crawler
 {
     public class CrawlerManager
     {

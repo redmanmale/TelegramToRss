@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace DemoRss.DAL
+namespace Redmanmale.TelegramToRss.DAL
 {
     public class BlogDbContext : DbContext, IStorage
     {

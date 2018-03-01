@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using DemoRss.DAL;
 using HtmlAgilityPack;
 using OpenQA.Selenium.Firefox;
+using Redmanmale.TelegramToRss.DAL;
 
-namespace DemoRss.Crawler
+namespace Redmanmale.TelegramToRss.Crawler
 {
     /// <summary>
     /// Crawler to download, parse and create entites for posts.

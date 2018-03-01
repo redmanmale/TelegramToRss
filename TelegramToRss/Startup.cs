@@ -1,12 +1,12 @@
-﻿using DemoRss.DAL;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Redmanmale.TelegramToRss.DAL;
 
-namespace DemoRss
+namespace Redmanmale.TelegramToRss
 {
     public class Startup
     {

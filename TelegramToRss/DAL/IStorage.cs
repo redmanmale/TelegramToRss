@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DemoRss.DAL
+namespace Redmanmale.TelegramToRss.DAL
 {
     public interface IStorage
     {

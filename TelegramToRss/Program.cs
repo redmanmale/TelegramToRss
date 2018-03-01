@@ -2,14 +2,14 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DemoRss.Crawler;
-using DemoRss.DAL;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Redmanmale.TelegramToRss.Crawler;
+using Redmanmale.TelegramToRss.DAL;
 
-namespace DemoRss
+namespace Redmanmale.TelegramToRss
 {
     public static class Program
     {

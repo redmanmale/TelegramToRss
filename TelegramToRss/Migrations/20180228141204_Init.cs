@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
-using System;
-using System.Collections.Generic;
 
-namespace DemoRss.Migrations
+namespace Redmanmale.TelegramToRss.Migrations
 {
     public partial class Init : Migration
     {

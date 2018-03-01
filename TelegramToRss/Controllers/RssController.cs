@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using DemoRss.DAL;
 using Microsoft.AspNetCore.Mvc;
+using Redmanmale.TelegramToRss.DAL;
 using WilderMinds.RssSyndication;
 
-namespace DemoRss.Controllers
+namespace Redmanmale.TelegramToRss.Controllers
 {
     [Route("[controller]")]
     public class RssController : Controller

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace DemoRss.DAL
+namespace Redmanmale.TelegramToRss.DAL
 {
     [Serializable]
     public class DbException : Exception

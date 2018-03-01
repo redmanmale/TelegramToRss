@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DemoRss.DAL;
 using Microsoft.AspNetCore.Mvc;
+using Redmanmale.TelegramToRss.DAL;
 
-namespace DemoRss.Controllers
+namespace Redmanmale.TelegramToRss.Controllers
 {
     [Route("[controller]")]
     public class ChannelController
