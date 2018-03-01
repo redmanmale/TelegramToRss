@@ -35,10 +35,7 @@ namespace Redmanmale.TelegramToRss.Crawler
             }
         }
 
-        public void Stop()
-        {
-            _crawler.Dispose();
-        }
+        public void Stop() => _crawler.Dispose();
 
         private async Task<bool> CheckForNewPost(Channel channel)
         {

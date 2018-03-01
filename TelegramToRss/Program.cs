@@ -13,6 +13,9 @@ namespace Redmanmale.TelegramToRss
 {
     public static class Program
     {
+        private static readonly EventWaitHandle ExitEvent = new AutoResetEvent(false);
+        private static readonly CancellationTokenSource CancellationToken = new CancellationTokenSource();
+
         public static void Main(string[] args)
         {
             RunAsConsole(args);
@@ -21,11 +24,13 @@ namespace Redmanmale.TelegramToRss
         private static void RunAsConsole(string[] args)
         {
             Console.WriteLine("Starting...");
+            Console.CancelKeyPress += OnCancelKeyPress;
 
             var enableCrawler = args.Contains("-c");
             var enableFeed = args.Contains("-f");
 
             CrawlerManager crawlerManager = null;
+
             if (enableCrawler)
             {
                 var config = GetConfiguration();
@@ -34,15 +39,23 @@ namespace Redmanmale.TelegramToRss
                                                     CreateCrawlingConfig(config));
 
                 Task.Run(() => crawlerManager
-                               .RunAsync(CancellationToken.None)
-                               .ContinueWith(task => Console.WriteLine(task.Exception)));
+                               .RunAsync(CancellationToken.Token)
+                               .ContinueWith(task => Console.WriteLine(task.Exception), CancellationToken.Token),
+                         CancellationToken.Token);
             }
 
             IWebHost webHost = null;
             if (enableFeed)
             {
                 webHost = BuildWebHost();
+
+                Console.WriteLine("Started.");
                 webHost.Run();
+            }
+            else
+            {
+                Console.WriteLine("Started.");
+                ExitEvent.WaitOne();
             }
 
             Console.WriteLine("Stopping...");
@@ -54,8 +67,15 @@ namespace Redmanmale.TelegramToRss
 
             if (enableFeed)
             {
-                webHost.StopAsync().GetAwaiter().GetResult();
+                webHost.StopAsync(CancellationToken.Token).GetAwaiter().GetResult();
             }
+        }
+
+        private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
+        {
+            e.Cancel = true;
+            ExitEvent.Set();
+            CancellationToken.Cancel();
         }
 
         private static IWebHost BuildWebHost() =>
