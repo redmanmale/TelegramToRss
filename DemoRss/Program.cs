@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DemoRss.Crawler;
@@ -12,8 +13,6 @@ namespace DemoRss
 {
     public static class Program
     {
-        private static readonly EventWaitHandle ExitEvent = new AutoResetEvent(false);
-
         public static void Main(string[] args)
         {
             RunAsConsole(args);
@@ -22,33 +21,40 @@ namespace DemoRss
         private static void RunAsConsole(string[] args)
         {
             Console.WriteLine("Starting...");
-            Console.CancelKeyPress += OnCancelKeyPress;
 
-            var config = GetConfiguration();
-            var crawlerManager = new CrawlerManager(GetSeleniumDriverPath(config), CreateDbContext(config));
-            Task.Run(() => crawlerManager.RunAsync(CancellationToken.None).ContinueWith(task => Console.WriteLine(task.Exception))); // TODO: Logging
+            var enableCrawler = args.Contains("-c");
+            var enableFeed = args.Contains("-f");
 
-            var webHost = BuildWebHost(args);
-            //Task.Run(() => webHost.RunAsync());
-            webHost.Run();
+            CrawlerManager crawlerManager = null;
+            if (enableCrawler)
+            {
+                var config = GetConfiguration();
+                crawlerManager = new CrawlerManager(GetSeleniumDriverPath(config), CreateDbContext(config));
+                Task.Run(() => crawlerManager.RunAsync(CancellationToken.None).ContinueWith(task => Console.WriteLine(task.Exception))); // TODO: Logging
+            }
 
-            Console.WriteLine("Started.");
-            ExitEvent.WaitOne();
+            IWebHost webHost = null;
+            if (enableFeed)
+            {
+                webHost = BuildWebHost();
+                webHost.Run();
+            }
 
             Console.WriteLine("Stopping...");
 
-            crawlerManager.Stop();
-            webHost.StopAsync().GetAwaiter().GetResult();
+            if (enableCrawler)
+            {
+                crawlerManager.Stop();
+            }
+
+            if (enableFeed)
+            {
+                webHost.StopAsync().GetAwaiter().GetResult();
+            }
         }
 
-        private static void OnCancelKeyPress(object sender, ConsoleCancelEventArgs e)
-        {
-            e.Cancel = true;
-            ExitEvent.Set();
-        }
-
-        private static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        private static IWebHost BuildWebHost() =>
+            WebHost.CreateDefaultBuilder()
                    .UseStartup<Startup>()
                    .Build();
 

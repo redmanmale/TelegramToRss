@@ -17,6 +17,7 @@
     },
     "DemoRss": {
       "commandName": "Project",
+      "commandLineArgs": "-f",
       "launchUrl": "api/values",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
