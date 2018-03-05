@@ -26,6 +26,16 @@ namespace Redmanmale.TelegramToRss
             var enableCrawler = args.Contains("-c");
             var enableFeed = args.Contains("-f");
 
+            if (args.Contains("-h") || (!enableCrawler && !enableFeed))
+            {
+                Console.WriteLine("{0}TelegramToRss. Usage:{0}" +
+                                  " -c\tEnable crawler: retrieve new posts and save them to DB.{0}" +
+                                  " -f\tEnable web-API: serve RSS feed and CRUD for channels.{0}" +
+                                  " -h\tShow this help.",
+                                  Environment.NewLine);
+                return;
+            }
+
             CrawlerManager crawlerManager = null;
 
             if (enableCrawler)
