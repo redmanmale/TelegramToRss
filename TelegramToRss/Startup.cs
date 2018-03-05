@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Redmanmale.TelegramToRss.DAL;
@@ -21,9 +20,7 @@ namespace Redmanmale.TelegramToRss
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc(o => o.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter()));
-
-            var connectionString = Configuration.GetConnectionString("GeneralDbContext");
-            services.AddDbContext<GeneralDbContext>(a => a.UseNpgsql(connectionString));
+            services.AddSingleton<IStorage, Storage>(s => ConfigurationManager.CreateStorage(Configuration));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
