@@ -22,7 +22,7 @@ namespace Redmanmale.TelegramToRss
             var driverPath = config.GetSection("SeleniumDrivers")?["GeckoDriverPath"];
             if (string.IsNullOrWhiteSpace(driverPath))
             {
-                throw new ArgumentNullException("Config: SeleniumDrivers -> GeckoDriverPath");
+                throw new ArgumentNullException(driverPath, "Config: SeleniumDrivers -> GeckoDriverPath");
             }
 
             return driverPath;
@@ -33,7 +33,7 @@ namespace Redmanmale.TelegramToRss
             var connectionString = config.GetConnectionString("GeneralDbContext");
             if (string.IsNullOrWhiteSpace(connectionString))
             {
-                throw new ArgumentNullException("Config: ConnectionStrings -> GeneralDbContext");
+                throw new ArgumentNullException(connectionString, "Config: ConnectionStrings -> GeneralDbContext");
             }
 
             return new Storage(CreatePgSqlDbContext(connectionString));
