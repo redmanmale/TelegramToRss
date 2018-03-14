@@ -17,23 +17,9 @@ namespace Redmanmale.TelegramToRss
             return builder.Build();
         }
 
-        public static Storage CreateStorage(IConfiguration config)
-        {
-            var connectionString = config.GetConnectionString("GeneralDbContext");
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(connectionString, "Config: ConnectionStrings -> GeneralDbContext");
-            }
+        public static Storage CreateStorage(IConfiguration config) => new Storage(CreatePgSqlDbContext(config.GetConnectionString()));
 
-            return new Storage(CreatePgSqlDbContext(connectionString));
-        }
-
-        private static GeneralDbContext CreatePgSqlDbContext(string connectionString)
-        {
-            var options = new DbContextOptionsBuilder<GeneralDbContext>();
-            options.UseNpgsql(connectionString);
-            return new GeneralDbContext(options.Options);
-        }
+        internal static GeneralDbContext CreatePgSqlDbContext() => CreatePgSqlDbContext(GetConfiguration().GetConnectionString());
 
         public static CrawlingConfig CreateCrawlingConfig(IConfiguration config)
         {
@@ -54,6 +40,24 @@ namespace Redmanmale.TelegramToRss
             var forceCleanup = config.GetValue("forceCleanup", false);
 
             return new CrawlingConfig(TimeSpan.FromSeconds(channelCheckPeriod), TimeSpan.FromSeconds(channelPostDelay), forceCleanup);
+        }
+
+        private static string GetConnectionString(this IConfiguration config)
+        {
+            var connectionString = config.GetConnectionString("GeneralDbContext");
+            if (string.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(connectionString, "Config: ConnectionStrings -> GeneralDbContext");
+            }
+
+            return connectionString;
+        }
+
+        private static GeneralDbContext CreatePgSqlDbContext(string connectionString)
+        {
+            var options = new DbContextOptionsBuilder<GeneralDbContext>();
+            options.UseNpgsql(connectionString);
+            return new GeneralDbContext(options.Options);
         }
     }
 }
