@@ -41,8 +41,7 @@ namespace Redmanmale.TelegramToRss
             if (enableCrawler)
             {
                 var config = ConfigurationManager.GetConfiguration();
-                crawlerManager = new CrawlerManager(ConfigurationManager.GetSeleniumDriverPath(config),
-                                                    ConfigurationManager.CreateStorage(config),
+                crawlerManager = new CrawlerManager(ConfigurationManager.CreateStorage(config),
                                                     ConfigurationManager.CreateCrawlingConfig(config));
 
                 Task.Run(() => crawlerManager

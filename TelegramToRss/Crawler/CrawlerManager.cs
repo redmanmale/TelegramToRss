@@ -11,11 +11,11 @@ namespace Redmanmale.TelegramToRss.Crawler
         private readonly IStorage _storage;
         private readonly CrawlingConfig _config;
 
-        public CrawlerManager(string driverPath, IStorage storage, CrawlingConfig config)
+        public CrawlerManager(IStorage storage, CrawlingConfig config)
         {
             _storage = storage;
             _config = config;
-            _crawler = new Crawler(driverPath);
+            _crawler = new Crawler(config.ForceCleanup);
         }
 
         public async Task RunAsync(CancellationToken cancellationToken)
