@@ -8,6 +8,8 @@ namespace Redmanmale.TelegramToRss.DAL
     {
         Task<List<Channel>> GetChannelsAsync();
 
+        Task<List<Channel>> GetChannelsToCheckAsync(DateTime dateTime);
+
         Task<Channel> GetChannelAsync(long channelId);
 
         Task<List<Post>> GetPostsAfterDateAsync(DateTime dateTime);

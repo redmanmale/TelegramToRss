@@ -30,6 +30,20 @@ namespace Redmanmale.TelegramToRss.DAL
             }
         }
 
+        public Task<List<Channel>> GetChannelsToCheckAsync(DateTime dateTime)
+        {
+            try
+            {
+                return _context.Channels.Where(d => d.LastCheck < dateTime).OrderBy(d => d.Id).ToListAsync();
+            }
+            catch (Exception exc)
+            {
+                // TODO: Logging
+                Console.WriteLine(exc);
+                throw new DbException("Error occured when reading channels", exc);
+            }
+        }
+
         public Task<Channel> GetChannelAsync(long channelId)
         {
             try

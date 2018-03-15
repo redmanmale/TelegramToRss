@@ -7,6 +7,8 @@ namespace Redmanmale.TelegramToRss.Crawler
 {
     public class CrawlerManager
     {
+        private static readonly long[] _steps = { 1, 5, 10, 50 };
+
         private readonly Crawler _crawler;
         private readonly IStorage _storage;
         private readonly CrawlingConfig _config;
@@ -22,49 +24,84 @@ namespace Redmanmale.TelegramToRss.Crawler
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var channels = await _storage.GetChannelsAsync();
+                var channels = await _storage.GetChannelsToCheckAsync(DateTime.Now.Add(-_config.ChannelCheckPeriod));
                 foreach (var channel in channels)
                 {
-                    while (await CheckForNewPost(channel))
-                    {
-                        await Task.Delay(_config.ChannelPostDelay, cancellationToken);
-                    }
+                    await CheckChannel(channel, cancellationToken);
                 }
 
-                await Task.Delay(_config.ChannelCheckPeriod, cancellationToken);
+                // TODO: configure delay between channel update checks
+                await Task.Delay(TimeSpan.FromSeconds(30), cancellationToken);
             }
         }
 
-        public void Stop() => _crawler.Dispose();
+        private async Task CheckChannel(Channel channel, CancellationToken cancellationToken)
+        {
+            while (await CheckForNewPost(channel))
+            {
+                await Task.Delay(_config.ChannelPostDelay, cancellationToken);
+            }
+
+            channel.LastCheck = DateTime.Now;
+            await _storage.UpdateChannelAsync(channel);
+        }
 
         private async Task<bool> CheckForNewPost(Channel channel)
         {
             var newPostNumber = channel.LastNumber + 1;
             var newPost = await _crawler.GetPost(Post.FormatUrl(channel.Url, newPostNumber));
-            if (newPost == null || newPostNumber > 10)
+
+            // TODO: for debug
+            if (newPostNumber > 20)
             {
                 return false;
             }
 
-            newPost.Channel = channel;
-            newPost.ChannelId = channel.Id;
-            newPost.Number = newPostNumber;
-
-            if (string.IsNullOrWhiteSpace(newPost.Header))
+            // Because sometimes there are missing posts and we have to check if there are next ones.
+            if (newPost == null && !await CheckIfNextPostsExist(channel.Url, newPostNumber))
             {
-                newPost.Header = "Post #" + newPost.Number;
+                return false;
             }
 
-            if (newPost.State == PostState.Normal)
+            if (newPost != null)
             {
-                await _storage.SavePostAsync(newPost);
+                newPost.Channel = channel;
+                newPost.ChannelId = channel.Id;
+                newPost.Number = newPostNumber;
+
+                if (string.IsNullOrWhiteSpace(newPost.Header))
+                {
+                    newPost.Header = "Post #" + newPost.Number;
+                }
+
+                if (newPost.State == PostState.Normal)
+                {
+                    channel.LastPost = newPost.PublishDate;
+                    await _storage.SavePostAsync(newPost);
+                }
             }
 
-            channel.LastUpdate = DateTime.Now;
-            channel.LastNumber = newPost.Number;
-
-            await _storage.UpdateChannelAsync(channel);
+            channel.LastNumber = newPostNumber;
             return true;
         }
+
+        /// <summary>
+        /// Check if there are posts after current one.
+        /// </summary>
+        private async Task<bool> CheckIfNextPostsExist(string url, long newPostNumber)
+        {
+            foreach (var step in _steps)
+            {
+                var post = await _crawler.GetPost(Post.FormatUrl(url, newPostNumber + step));
+                if (post != null)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void Stop() => _crawler?.Dispose();
     }
 }
