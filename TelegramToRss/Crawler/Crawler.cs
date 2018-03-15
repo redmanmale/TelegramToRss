@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HtmlAgilityPack;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using Redmanmale.TelegramToRss.DAL;
 
 namespace Redmanmale.TelegramToRss.Crawler
@@ -17,8 +13,6 @@ namespace Redmanmale.TelegramToRss.Crawler
     /// </summary>
     public class Crawler : IDisposable
     {
-        private readonly bool _forceCleanup;
-
         private static readonly Regex ImageUrlGetter = new Regex("'(.+)'",
                                                                  RegexOptions.Compiled |
                                                                  RegexOptions.CultureInvariant |
@@ -32,28 +26,20 @@ namespace Redmanmale.TelegramToRss.Crawler
 
         private const string UrlLinkFormat = "<a href=\"{0}\"><img src=\"{0}\"></img></a>";
 
-        private readonly IWebDriver _driver;
+        private readonly HttpClient _client;
 
-        public Crawler(bool forceCleanup)
+        public Crawler()
         {
-            _forceCleanup = forceCleanup;
-            var currentFolder = Path.GetDirectoryName(new Uri(Assembly.GetEntryAssembly().CodeBase).AbsolutePath);
-
-            var options = new ChromeOptions();
-            options.AddArguments(new List<string> { "headless" });
-
-            _driver = new ChromeDriver(currentFolder, options);
+            _client = new HttpClient();
         }
 
         /// <summary>
         /// Create post entity from provided URL.
         /// </summary>
-        public Post GetPost(string url)
+        public async Task<Post> GetPost(string url)
         {
-            _driver.Url = url;
-            _driver.Navigate();
-
-            return ParsePost(_driver.PageSource);
+            var pageSource = await _client.GetStringAsync(url);
+            return ParsePost(pageSource);
         }
 
         /// <summary>
@@ -82,7 +68,7 @@ namespace Redmanmale.TelegramToRss.Crawler
                               ?.GetAttributeValue("datetime", null);
 
             var isService = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='message_media_not_supported_label']") != null;
-            var isDeleted = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='tgme_widget_message_error']") != null;
+            var isDeleted = htmlDoc.DocumentNode.SelectSingleNode("//div[@class='tgme_widget_message_error']") != null || date == null;
 
             var post = new Post
             {
@@ -140,32 +126,9 @@ namespace Redmanmale.TelegramToRss.Crawler
             return match.Success ? string.Format(UrlLinkFormat, match.Groups[1].Value) : null;
         }
 
-        private static void ForceCleanup()
-        {
-            foreach (var process in Process.GetProcessesByName("chrome"))
-            {
-                process.Kill();
-            }
-        }
-
         public void Dispose()
         {
-            _driver?.Quit();
-            _driver?.Dispose();
-
-            if (!_forceCleanup)
-            {
-                return;
-            }
-
-            try
-            {
-                ForceCleanup();
-            }
-            catch
-            {
-                // ignored
-            }
+            _client?.Dispose();
         }
     }
 }

@@ -37,9 +37,7 @@ namespace Redmanmale.TelegramToRss
                 throw new ArgumentException("Config: Delays -> ChannelPostDelay");
             }
 
-            var forceCleanup = config.GetValue("forceCleanup", false);
-
-            return new CrawlingConfig(TimeSpan.FromSeconds(channelCheckPeriod), TimeSpan.FromSeconds(channelPostDelay), forceCleanup);
+            return new CrawlingConfig(TimeSpan.FromSeconds(channelCheckPeriod), TimeSpan.FromSeconds(channelPostDelay));
         }
 
         private static string GetConnectionString(this IConfiguration config)

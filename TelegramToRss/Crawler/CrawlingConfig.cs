@@ -8,13 +8,10 @@ namespace Redmanmale.TelegramToRss.Crawler
 
         public TimeSpan ChannelPostDelay { get; }
 
-        public bool ForceCleanup { get; }
-
-        public CrawlingConfig(TimeSpan channelCheckPeriod, TimeSpan channelPostDelay, bool forceCleanup)
+        public CrawlingConfig(TimeSpan channelCheckPeriod, TimeSpan channelPostDelay)
         {
             ChannelCheckPeriod = channelCheckPeriod;
             ChannelPostDelay = channelPostDelay;
-            ForceCleanup = forceCleanup;
         }
     }
 }

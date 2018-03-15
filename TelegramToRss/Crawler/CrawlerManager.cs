@@ -15,7 +15,7 @@ namespace Redmanmale.TelegramToRss.Crawler
         {
             _storage = storage;
             _config = config;
-            _crawler = new Crawler(config.ForceCleanup);
+            _crawler = new Crawler();
         }
 
         public async Task RunAsync(CancellationToken cancellationToken)
@@ -40,7 +40,7 @@ namespace Redmanmale.TelegramToRss.Crawler
         private async Task<bool> CheckForNewPost(Channel channel)
         {
             var newPostNumber = channel.LastNumber + 1;
-            var newPost = _crawler.GetPost(Post.FormatUrl(channel.Url, newPostNumber));
+            var newPost = await _crawler.GetPost(Post.FormatUrl(channel.Url, newPostNumber));
             if (newPost == null || newPostNumber > 10)
             {
                 return false;
