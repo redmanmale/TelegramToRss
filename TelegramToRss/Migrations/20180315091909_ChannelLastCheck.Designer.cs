@@ -11,9 +11,10 @@ using System;
 namespace Redmanmale.TelegramToRss.Migrations
 {
     [DbContext(typeof(GeneralDbContext))]
-    partial class BlogDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180315091909_ChannelLastCheck")]
+    partial class ChannelLastCheck
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

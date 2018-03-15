@@ -64,7 +64,7 @@ namespace Redmanmale.TelegramToRss.Controllers
             }
 
             channel.LastNumber = 0;
-            channel.LastUpdate = DateTime.Now;
+            channel.LastPost = DateTime.Now;
 
             try
             {

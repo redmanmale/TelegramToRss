@@ -97,10 +97,15 @@ namespace Redmanmale.TelegramToRss.DAL
         public string Url { get; set; }
 
         /// <summary>
-        /// Last update of the channel.
+        /// Last post in the channel.
+        /// </summary>
+        public DateTime? LastPost { get; set; }
+
+        /// <summary>
+        /// Last check for new posts for this channel.
         /// </summary>
         [Required]
-        public DateTime LastUpdate { get; set; }
+        public DateTime LastCheck { get; set; }
 
         /// <summary>
         /// Number of latest post in the channel.
