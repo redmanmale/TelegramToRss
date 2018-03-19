@@ -11,12 +11,11 @@ Read your favorite Telegram channels via RSS feed. No Telegram account needed.
 
 ## TODO
 
-* [x] Use Selenium to scrape Telegram channels (from t.me)
 * [x] Set up PostgreSQL and EF Core to store channels and posts
 * [x] Set up RSS feed Web API
 * [x] Configuration
-* [ ] Self-contained builds for Linux and Windows
-* [ ] Test on Ubuntu
+* [x] Self-contained builds for Linux and Windows
+* [x] Test on Ubuntu
 * [ ] Continuous test (several days)
 * [ ] Authorization (simple hardcoded login/password)
 * [ ] Private RSS feed (w/ token)
